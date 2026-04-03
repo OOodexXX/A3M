@@ -2,6 +2,7 @@
    A3M-PRINT - CHECKOUT.JS (نظام الدفع وإتمام الطلب)
    ============================================================ */
 
+
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const db = getFirestore();
@@ -30,6 +31,8 @@ function renderCheckoutSummary() {
         `;
     }).join('');
 
+    window.renderCheckoutSummary = renderCheckoutSummary;
+
     // حساب الخصم (20% إذا كان فوق 100)
     let discount = subtotal >= 100 ? subtotal * 0.20 : 0;
     let total = subtotal - discount;
@@ -51,12 +54,16 @@ function setupFormListener() {
     }
 }
 
+window.setupFormListener = setupFormListener;
+
 // 4. دالة إرسال الطلب النهائي
 async function placeOrder() {
     if (checkoutCart.length === 0) {
         alert("سلتك فارغة!");
         return;
     }
+
+    window.placeOrder = placeOrder;
 
     const btn = document.getElementById('submitOrderBtn');
     if (btn) btn.disabled = true;
