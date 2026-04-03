@@ -65,6 +65,7 @@ async function register(email, password, displayName, phone = "") {
         throw error;
     }
 }
+window.register = register; // تصدير الدالة تحتها مباشرة
 
 // --- 3. دالة تسجيل الدخول بالإيميل ---
 async function login(email, password) {
@@ -76,6 +77,7 @@ async function login(email, password) {
         throw error;
     }
 }
+window.login = login; // تصدير الدالة تحتها مباشرة
 
 // --- 4. دالة الدخول عبر جوجل ---
 async function loginGoogle() {
@@ -99,6 +101,7 @@ async function loginGoogle() {
         throw error;
     }
 }
+window.loginGoogle = loginGoogle; // تصدير الدالة تحتها مباشرة
 
 // --- 5. تسجيل الخروج ---
 async function logout() {
@@ -108,6 +111,7 @@ async function logout() {
         console.error("Logout Error:", error.message);
     }
 }
+window.logout = logout; // تصدير الدالة تحتها مباشرة
 
 // --- 6. وظائف الواجهة المتعلقة بـ Auth ---
 function openAuth() {
@@ -117,8 +121,9 @@ function openAuth() {
         if (typeof showAuthModal === "function") showAuthModal();
     }
 }
+window.openAuth = openAuth; // تصدير الدالة تحتها مباشرة
 
-// تصدير الدوال للاستخدام في الواجهة (Global Scope)
+// تصدير الدوال ككائن موحد أيضاً للاحتياط
 window.authSystem = {
     register,
     login,
