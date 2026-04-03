@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إتمام الطلب — A3M Print</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <!-- BUG FIX: المسار الصحيح من /pages/ → ../css/ -->
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .checkout-wrap{max-width:640px;margin:2rem auto;padding:1.5rem}
+    .checkout-card{background:var(--bg2);border-radius:16px;border:1px solid var(--border);padding:1.5rem;margin-bottom:1.2rem}
+    .checkout-card h3{font-family:'Permanent Marker',cursive;font-size:1.2rem;color:var(--txt);margin-bottom:1rem}
+    .form-group{margin-bottom:.9rem}
+    .form-label{display:block;font-size:12px;font-weight:700;color:var(--gold);margin-bottom:.4rem;letter-spacing:.5px}
+    .form-input{width:100%;background:var(--bg4);border:1px solid var(--border2);color:var(--txt);padding:10px 12px;border-radius:8px;font-size:13px;outline:none;font-family:inherit}
+    .form-input:focus{border-color:var(--accent)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .checkout-item{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--txt2)}
+    .checkout-totals{margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+    .checkout-totals div{display:flex;justify-content:space-between;font-size:13px;padding:.25rem 0;color:var(--txt2)}
+    .checkout-final{font-weight:700;font-size:15px;color:var(--txt)!important;margin-top:.5rem}
+    #checkout-feedback{display:none;padding:.6rem 1rem;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:1rem;background:var(--bg4)}
+    #placeOrderBtn{width:100%;background:var(--accent);color:#fff;border:1px solid var(--gold);padding:13px;border-radius:8px;cursor:pointer;font-weight:700;font-size:15px;font-family:inherit;margin-top:.5rem}
+    #placeOrderBtn:hover{background:var(--accent2)}
+    #placeOrderBtn:disabled{opacity:.6;cursor:not-allowed}
+    .back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--txt3);font-size:13px;text-decoration:none;margin-bottom:1rem}
+    .back-link:hover{color:var(--accent)}
+  </style>
+</head>
+<body class="blue-dark">
+
+  <div class="checkout-wrap">
+    <a class="back-link" onclick="history.back()">← العودة</a>
+
+    <h1 style="font-family:'Permanent Marker',cursive;font-size:1.8rem;margin-bottom:1.5rem;color:var(--txt)">
+      A<span class="r">3</span><span class="g">M</span> — إتمام الطلب
+    </h1>
+
+    <!-- ملخص السلة (checkout.js تملؤه) -->
+    <div class="checkout-card">
+      <h3>🛒 ملخص الطلب</h3>
+      <div id="checkoutItems">جاري التحميل...</div>
+    </div>
+
+    <!-- بيانات العميل -->
+    <div class="checkout-card">
+      <h3>👤 بياناتك</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">الاسم الكامل *</label>
+          <input class="form-input" id="c_name" placeholder="أحمد بن علي"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الهاتف *</label>
+          <input class="form-input" id="c_phone" placeholder="0555 123 456" type="tel"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">العنوان *</label>
+          <input class="form-input" id="c_address" placeholder="رقم، شارع، حي"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الولاية</label>
+          <input class="form-input" id="c_wilaya" placeholder="الجزائر العاصمة"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ملاحظات (اختياري)</label>
+        <textarea class="form-input" id="c_notes" rows="2"
+          placeholder="تفاصيل إضافية عن الطلب أو التصميم..." style="resize:vertical"></textarea>
+      </div>
+    </div>
+
+    <!-- BUG FIX: عنصر التغذية الراجعة (كان ناقصاً تماماً) -->
+    <div id="checkout-feedback"></div>
+
+    <button id="placeOrderBtn" onclick="placeOrder()">✦ تأكيد الطلب</button>
+  </div>
+
+  <!-- BUG FIX: المسار الصحيح من /pages/ → ../js/ -->
+  <script type="module" src="../js/main.js"></script>
+
+  <script>
+    // تطبيق الثيم المحفوظ
+    const t = localStorage.getItem("a3m_theme") || "blue-dark";
+    document.body.className = t;
+  </script>
+</body>
+</html>

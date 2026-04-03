@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A3M Print — اطبع أفكارك</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./css/style.css"/>
+</head>
+<!-- BUG FIX: class الافتراضي يطابق DEFAULT_THEME في app.js -->
+<body class="blue-dark">
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <div style="display:flex;align-items:center;gap:.7rem">
+      <button class="hamburger" onclick="document.getElementById('sidebar')?.classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        A<span class="r">3</span><span class="g">M</span>
+      </a>
+    </div>
+    <div class="nav-links">
+      <a href="#">الرئيسية</a>
+      <a href="#products">المنتجات</a>
+      <a href="#" onclick="openModePicker && openModePicker()">تصميمي</a>
+      <a href="#" onclick="openOrderForm && openOrderForm()">تواصل</a>
+    </div>
+    <div class="nav-right">
+      <!-- عملة -->
+      <div class="currency-wrap">
+        <button class="currency-btn active" id="btnDZD" onclick="setCurrencyUI('DZD')">DZD</button>
+        <button class="currency-btn"        id="btnUSD" onclick="setCurrencyUI('USD')">USD</button>
+      </div>
+      <!-- ثيم -->
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <!-- سلة -->
+      <button class="cart-btn-nav" onclick="openCart && openCart()">
+        🛒 <span class="cart-count"></span>
+      </button>
+      <!-- حساب -->
+      <button class="acc-btn" id="accountNavBtn" onclick="openAccount && openAccount()">
+        👤 Account
+      </button>
+      <!-- ديزاين -->
+      <button class="design-nav-btn" onclick="openModePicker && openModePicker()">
+        🎨 Design Now
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="top">
+    <div class="hero-eyebrow">✦ Premium Print Studio ✦</div>
+    <h1>A<span class="r">3</span><span class="g">M</span><br>PRINT</h1>
+    <p class="hero-sub">Print your ideas — make them real.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('products')?.scrollIntoView({behavior:'smooth'})">
+        تسوّق الآن
+      </button>
+      <button class="btn-gold" onclick="openModePicker && openModePicker()">
+        🎨 ابدأ التصميم
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== PRODUCTS ===== -->
+  <section class="section" id="products">
+    <div class="section-title">منتجاتنا <span class="r">المميزة</span> <span class="g">✦</span></div>
+    <div class="section-sub">Premium Collection</div>
+
+    <!-- فلتر الفئات -->
+    <div class="categories">
+      <button class="cat-btn active" onclick="filterCat('all', this)">✦ الكل</button>
+      <button class="cat-btn" onclick="filterCat('tshirt', this)">تيشرتات</button>
+      <button class="cat-btn" onclick="filterCat('mug', this)">أكواب</button>
+      <button class="cat-btn" onclick="filterCat('hat', this)">قبعات</button>
+      <button class="cat-btn" onclick="filterCat('bag', this)">حقائب</button>
+      <button class="cat-btn" onclick="filterCat('paper', this)">أوراق</button>
+    </div>
+
+    <!-- حاوية المنتجات (cart.js تملؤها) -->
+    <div class="products-grid" id="productsContainer"></div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">A<span class="r">3</span><span class="g">M</span></div>
+        <div class="gold-line"></div>
+        <p>شركة طباعة احترافية — نطبع أحلامك على الواقع</p>
+        <div class="footer-social">
+          <a class="social-btn instagram" title="Instagram">📸</a>
+          <a class="social-btn whatsapp"  title="WhatsApp">💬</a>
+          <a class="social-btn facebook"  title="Facebook">👤</a>
+          <a class="social-btn telegram"  title="Telegram">✈️</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 A3M Print. جميع الحقوق محفوظة.</p>
+      <p>Made with ❤️ in Algeria 🇩🇿</p>
+    </div>
+  </footer>
+
+  <!-- BUG FIX: type="module" + المسار الصحيح main.js لا mains.js -->
+  <script type="module" src="./js/main.js"></script>
+
+  <script>
+    // دوال مساعدة للـ HTML inline (تعمل بعد تحميل الوحدات)
+    function filterCat(cat, el) {
+      document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+      el.classList.add("active");
+      if (typeof renderProducts === "function") renderProducts(cat);
+    }
+    function setCurrencyUI(c) {
+      document.getElementById("btnDZD").classList.toggle("active", c === "DZD");
+      document.getElementById("btnUSD").classList.toggle("active", c === "USD");
+      // cart.js يقرأ window.currency
+      window.currency = c;
+      if (typeof renderProducts === "function") renderProducts();
+    }
+  </script>
+</body>
+</html>
