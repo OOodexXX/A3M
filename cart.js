@@ -6,7 +6,7 @@ let cart = JSON.parse(localStorage.getItem('a3m_cart')) || [];
 let currency = 'DZD'; 
 let currentCat = 'all';
 
-// 1. عرض المنتجات (تستخدم PRODUCTS المعرفة في data.js)
+// 1. عرض المنتجات
 function renderProducts(cat = 'all') {
     currentCat = cat;
     const container = document.getElementById('productsContainer');
@@ -34,6 +34,7 @@ function renderProducts(cat = 'all') {
         if (typeof updateModalTotal === "function") updateModalTotal();
     }
 }
+window.renderProducts = renderProducts; // تصدير الدالة تحتها مباشرة
 
 // 2. إضافة للسلة مع تنبيه الجودة
 function addToCart(id) {
@@ -50,6 +51,7 @@ function addToCart(id) {
     updateCart();
     renderProducts(currentCat); 
 }
+window.addToCart = addToCart; // تصدير الدالة تحتها مباشرة
 
 // 3. تحديث السلة + خصم الجملة 20%
 function updateCart() {
@@ -69,7 +71,7 @@ function updateCart() {
         }
     });
 
-    // خصم 20% إذا وصل المجموع لـ 100
+    // خصم 20% إذا وصل المجموع لـ 100 (أو حسب القيمة التي تريدها)
     let discount = subtotal >= 100 ? subtotal * 0.20 : 0;
     let total = subtotal - discount;
 
@@ -88,6 +90,7 @@ function updateCart() {
         if (typeof updateModalTotal === "function") updateModalTotal();
     }
 }
+window.updateCart = updateCart; // تصدير الدالة تحتها مباشرة
 
 // 4. حذف وتوجيه
 function removeFromCart(index) {
@@ -95,20 +98,16 @@ function removeFromCart(index) {
     updateCart();
     renderProducts(currentCat);
 }
+window.removeFromCart = removeFromCart; // تصدير الدالة تحتها مباشرة
 
 function checkout() {
     if (cart.length === 0) return alert("السلة فارغة!");
     localStorage.setItem('a3m_cart', JSON.stringify(cart));
     window.location.href = 'pages/checkout.html';
 }
+window.checkout = checkout; // تصدير الدالة تحتها مباشرة
 
-// التصدير والتشغيل
-window.renderProducts = renderProducts;
-window.addToCart = addToCart;
-window.updateCart = updateCart;
-window.removeFromCart = removeFromCart;
-window.checkout = checkout;
-
+// التشغيل عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     updateCart();
     renderProducts(currentCat);
