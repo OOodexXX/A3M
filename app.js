@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             
             // استدعاء دالة العرض من ملف cart.js
-            if (typeof renderProducts === 'function') {
-                renderProducts(cat);
+            if (typeof window.renderProducts === 'function') {
+                window.renderProducts(cat);
             }
         });
     });
@@ -49,6 +49,7 @@ function initLanguage() {
         if (translation[key]) el.innerText = translation[key];
     });
 }
+window.initLanguage = initLanguage; // تصدير الدالة تحتها مباشرة
 
 // دالة الـ Toast (التنبيهات)
 function showToast(msg) {
@@ -56,7 +57,17 @@ function showToast(msg) {
     toast.className = 'toast-msg';
     toast.innerText = msg;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    
+    // إضافة تنسيق بسيط للحذف التدريجي
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }
+window.showToast = showToast; // تصدير الدالة تحتها مباشرة
 
-window.showToast = showToast;
+// تصدير إضافي لضمان الوصول من أي مكان
+window.appSystem = {
+    initLanguage,
+    showToast
+};
