@@ -1,0 +1,95 @@
+<!-- ===== CAPS SHOWCASE ===== -->
+<section class="showcase-section" id="capsShowcase">
+  <div class="showcase-header">
+    <div class="showcase-label" id="capsLabel">🧢 CAPS COLLECTION</div>
+    <div class="showcase-title" id="capsSTitle">Custom <span class="r">Caps</span> <span class="g">& Hats</span></div>
+    <div class="showcase-sub" id="capsSSub">Baseball caps, bucket hats, and more — all fully customizable with your brand or design</div>
+  </div>
+  <div class="caps-gallery">
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/white_cap_model1.jpg" alt="White Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Classic White</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/black_cap_model3.jpg" alt="Black Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Midnight Black</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/blue_cap_model3.jpg" alt="Blue Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Navy Blue</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/red_cap_model3.jpg" alt="Red Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Bold Red</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/gray_cap_model4.jpg" alt="Gray Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Slate Gray</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/bage_cap_model4.jpg" alt="Beige Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Warm Beige</span><span class="cap-tag">Baseball Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/black__cap_model2.jpg" alt="Charcoal Cap" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Charcoal Wool</span><span class="cap-tag">Winter Cap</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/black_cap_model5.jpg" alt="Bucket Hat" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">Black Bucket</span><span class="cap-tag">Bucket Hat</span></div>
+    </div>
+    <div class="cap-card" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="cap-img-wrap"><img src="./images/caps/white_cap_model5.jpg" alt="White Bucket" onerror="this.parentNode.innerHTML='🧢'"/></div>
+      <div class="cap-info"><span class="cap-name">White Bucket</span><span class="cap-tag">Bucket Hat</span></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2rem">
+    <button class="btn-primary" onclick="filterCat('hat', document.getElementById('c-hat')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">View All Caps →</button>
+  </div>
+</section>
+
+<!-- ===== MUGS SHOWCASE ===== -->
+<section class="showcase-section showcase-alt" id="mugsShowcase">
+  <div class="showcase-header">
+    <div class="showcase-label" id="mugsLabel">☕ MUGS COLLECTION</div>
+    <div class="showcase-title" id="mugsSTitle">Custom <span class="r">Mugs</span> <span class="g">& Cups</span></div>
+    <div class="showcase-sub" id="mugsSSub">Ceramic mugs, travel cups, and Starbucks-style — print your logo, photo or design on any surface</div>
+  </div>
+  <div class="mugs-gallery">
+    <div class="mug-card" onclick="filterCat('mug', document.getElementById('c-mug')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="mug-img-wrap"><img src="./images/mugs/white_mug.jpg" alt="White Mug" onerror="this.parentNode.innerHTML='☕'"/></div>
+      <div class="mug-info">
+        <span class="mug-name">Classic White</span>
+        <span class="mug-tag">Ceramic Mug · 325ml</span>
+        <span class="mug-desc">Perfect for logos, photos &amp; custom text</span>
+      </div>
+    </div>
+    <div class="mug-card" onclick="filterCat('mug', document.getElementById('c-mug')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="mug-img-wrap"><img src="./images/mugs/black_mug.jpg" alt="Black Mug" onerror="this.parentNode.innerHTML='☕'"/></div>
+      <div class="mug-info">
+        <span class="mug-name">Matte Black</span>
+        <span class="mug-tag">Ceramic Mug · 325ml</span>
+        <span class="mug-desc">Bold &amp; premium — great for corporate gifts</span>
+      </div>
+    </div>
+    <div class="mug-card" onclick="filterCat('mug', document.getElementById('c-mug')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="mug-img-wrap"><img src="./images/mugs/white_starbucks_mug.jpg" alt="White Starbucks Cup" onerror="this.parentNode.innerHTML='🥤'"/></div>
+      <div class="mug-info">
+        <span class="mug-name">Travel Cup — White</span>
+        <span class="mug-tag">Paper Cup · 400ml</span>
+        <span class="mug-desc">Starbucks-style with lid, ideal for cafés</span>
+      </div>
+    </div>
+    <div class="mug-card" onclick="filterCat('mug', document.getElementById('c-mug')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+      <div class="mug-img-wrap"><img src="./images/mugs/black_starbucks_mug.jpg" alt="Black Starbucks Cup" onerror="this.parentNode.innerHTML='🥤'"/></div>
+      <div class="mug-info">
+        <span class="mug-name">Travel Cup — Black</span>
+        <span class="mug-tag">Paper Cup · 400ml</span>
+        <span class="mug-desc">Sleek dark finish for modern branding</span>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2rem">
+    <button class="btn-primary" onclick="filterCat('mug', document.getElementById('c-mug')); document.getElementById('products').scrollIntoView({behavior:'smooth'})">View All Mugs →</button>
+  </div>
+</section>
