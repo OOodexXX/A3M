@@ -1,0 +1,30 @@
+/* ============================================================
+   styles/index.css — A3M Print
+   Main entry point — imports all layers in dependency order.
+
+   Usage in HTML:
+     <link rel="stylesheet" href="./styles/index.css"/>
+
+   Or import per-page in your bundler:
+     import './styles/index.css';
+   ============================================================ */
+
+/* ── 1. Design tokens (must come first) ── */
+@import './base/variables.css';
+
+/* ── 2. Reset & box-model ── */
+@import './base/reset.css';
+
+/* ── 3. Global helpers, layout, animations, footer ── */
+@import './base/global.css';
+
+/* ── 4. Reusable components ── */
+@import './components/buttons.css';
+@import './components/navbar.css';
+@import './components/cards.css';
+
+/* ── 5. Page-specific overrides (load only what you need) ── */
+/* Uncomment the page your HTML file needs, or import all: */
+@import './pages/home.css';
+@import './pages/designer.css';
+@import './pages/checkout.css';

@@ -1,0 +1,112 @@
+/* ============================================================
+   buttons.css — A3M Print
+   All reusable button components across the site.
+   ============================================================ */
+
+/* ── Primary / Gold ── */
+.btn-primary {
+  background: var(--accent); color: #fff !important;
+  border: none; padding: 13px 28px; border-radius: 10px;
+  font-weight: 700; font-size: 14px; transition: .25s;
+  box-shadow: 0 4px 15px var(--abg);
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 25px var(--abg); }
+
+.btn-gold {
+  background: var(--gold); color: #111 !important;
+  border: none; padding: 13px 28px; border-radius: 10px;
+  font-weight: 700; font-size: 14px; transition: .25s;
+  box-shadow: 0 4px 15px rgba(201,168,76,.25);
+}
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+/* ── Auth ── */
+.auth-form         { display: flex; flex-direction: column; gap: .9rem; }
+.auth-form-header  { text-align: center; margin-bottom: .5rem; }
+.auth-logo         { font-family: 'Permanent Marker',cursive; font-size: 1.8rem; color: var(--txt); }
+.auth-subtitle     { font-size: 13px; color: var(--txt3); margin-top: .3rem; }
+.auth-divider      { text-align: center; font-size: 12px; color: var(--txt4); margin: .3rem 0; }
+.auth-switch       { text-align: center; font-size: 12px; color: var(--txt3); }
+.auth-switch a     { color: var(--accent); cursor: pointer; font-weight: 700; text-decoration: underline; }
+.auth-switch a:hover { color: var(--accent2); }
+
+/* ── Cart / Checkout ── */
+.cart-btn-nav {
+  background: var(--accent); color: #fff !important;
+  border: none; padding: 8px 14px; border-radius: 8px;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 5px; transition: .2s;
+  position: relative;
+}
+.cart-btn-nav:hover { background: var(--accent2); transform: translateY(-1px); }
+
+.checkout-btn {
+  width: 100%; background: var(--accent); color: #fff !important;
+  border: none; padding: 13px; border-radius: 10px;
+  font-weight: 700; font-size: 15px; transition: .2s;
+}
+.checkout-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+
+/* ── Discount ── */
+.discount-row { display: flex; gap: .5rem; margin-top: .7rem; }
+.discount-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--border2);
+  color: var(--txt); padding: 8px 12px; border-radius: 8px;
+  font-size: 12px; text-transform: uppercase; outline: none;
+}
+.discount-input:focus { border-color: var(--accent); }
+.discount-apply-btn {
+  background: var(--accent); color: #fff !important;
+  border: none; padding: 8px 14px; border-radius: 8px;
+  font-weight: 700; font-size: 12px; transition: .2s;
+}
+.discount-apply-btn:hover { background: var(--accent2); }
+.discount-badge       { font-size: 11px; font-weight: 700; color: var(--gold); }
+.discount-badge.error { color: #ef4444; }
+
+/* ── Designer toolbar buttons ── */
+.d-btn {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .38rem .75rem; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  border: 1px solid transparent; transition: all .18s ease;
+  white-space: nowrap; font-family: 'Cairo', sans-serif; line-height: 1;
+}
+.d-btn:disabled { opacity: .35; cursor: not-allowed; }
+.d-btn-outline {
+  background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); color: #9ca3af;
+}
+.d-btn-outline:hover:not(:disabled) {
+  background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.2); color: #f1f5f9;
+}
+.d-btn-accent {
+  background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff;
+  box-shadow: 0 2px 12px rgba(37,99,235,.35);
+}
+.d-btn-accent:hover:not(:disabled)  { transform:translateY(-1px); box-shadow:0 4px 18px rgba(37,99,235,.5); filter:brightness(1.08); }
+.d-btn-gold {
+  background: linear-gradient(135deg,#c9a84c,#a8862a); color: #111;
+  box-shadow: 0 2px 12px rgba(201,168,76,.3);
+}
+.d-btn-gold:hover:not(:disabled)    { transform:translateY(-1px); box-shadow:0 4px 18px rgba(201,168,76,.5); }
+.d-btn-purple {
+  background: linear-gradient(135deg,#7c3aed,#6d28d9); color: #fff;
+  box-shadow: 0 2px 12px rgba(124,58,237,.35);
+}
+.d-btn-purple:hover:not(:disabled)  { transform:translateY(-1px); box-shadow:0 4px 18px rgba(124,58,237,.5); }
+.ds-3d-btn {
+  background: linear-gradient(135deg,rgba(124,58,237,.18),rgba(201,168,76,.1)) !important;
+  border-color: rgba(124,58,237,.4) !important; color: #c9a84c !important; font-weight: 800;
+}
+.ds-3d-btn:hover {
+  background: linear-gradient(135deg,rgba(124,58,237,.35),rgba(201,168,76,.2)) !important;
+  border-color: #7c3aed !important; color: #fff !important;
+  box-shadow: 0 0 18px rgba(124,58,237,.4) !important;
+}
+
+/* active tool state (ruler / grid / snap) */
+.active-tool-btn {
+  color: #c9a84c !important;
+  border-color: rgba(201,168,76,.35) !important;
+  background: rgba(201,168,76,.08) !important;
+}
