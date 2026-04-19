@@ -1,0 +1,5 @@
+{
+  "en": { "best": "Best Seller", "new": "New",      "sale": "Sale",  "gold": "✦ Gold" },
+  "fr": { "best": "Best-seller", "new": "Nouveau",  "sale": "Promo", "gold": "✦ Or"   },
+  "ar": { "best": "الأكثر مبيعاً", "new": "جديد",  "sale": "تخفيض","gold": "✦ ذهبي" }
+}
