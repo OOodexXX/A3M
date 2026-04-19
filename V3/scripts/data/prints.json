@@ -1,0 +1,11 @@
+{
+  "thermal":  { "en": "Thermal Transfer: Heat transfers a design from special paper onto fabric. Great for photos and full-color images. Best for polyester.", "ar": "الطباعة الحرارية: نقل التصميم بالحرارة على القماش. مثالي للصور والألوان الكاملة." },
+  "embroid":  { "en": "Embroidery: Design is stitched into fabric with thread. Premium look, very durable, ideal for logos on caps and uniforms.", "ar": "التطريز: خياطة التصميم على القماش. مظهر راقٍ ومتين، مثالي للشعارات." },
+  "dye":      { "en": "Dye Sublimation: Ink becomes part of the fabric through heat. Vivid colors that never fade. Best for mugs, polyester shirts.", "ar": "الطباعة بالتسامي: الحبر يصبح جزءاً من القماش بالحرارة. ألوان زاهية لا تتلاشى. الأفضل للأكواب." },
+  "dtg":      { "en": "DTG (Direct-to-Garment): Digital inkjet printing directly on fabric. Best for detailed designs, photos, and small quantities.", "ar": "DTG: الطباعة الرقمية المباشرة على القماش. مثالي للتصاميم التفصيلية والكميات الصغيرة." },
+  "screen":   { "en": "Screen Printing: Ink pushed through a mesh screen. Best for bold, simple designs in high quantity. Very cost-effective.", "ar": "الطباعة بالشاشة الحريرية: الأفضل للتصاميم البسيطة بكميات كبيرة وبسعر منخفض." },
+  "uv":       { "en": "UV Printing: UV-cured ink on hard surfaces like acrylic, wood, metal, and glass. Extremely sharp and detailed.", "ar": "طباعة UV: حبر مثبت بالأشعة فوق البنفسجية على الأسطح الصلبة. دقة عالية وتفاصيل ممتازة." },
+  "laser":    { "en": "Laser Engraving: Laser burns design into surface. Permanent, high-precision. Works on wood, metal, acrylic, glass.", "ar": "الحفر بالليزر: تصميم دائم وعالي الدقة. يعمل على الخشب والمعدن والأكريليك والزجاج." },
+  "vinyl":    { "en": "Vinyl Cut: Design cut from colored vinyl and applied to surface. Great for stickers, signs, vehicle wraps, and windows.", "ar": "قص الفينيل: تصميم مقصوص من الفينيل الملون. رائع للملصقات والتوقيعات واللافتات." },
+  "offset":   { "en": "Offset Printing: Traditional press printing for paper. Best quality for high-volume paper orders like brochures and flyers.", "ar": "الطباعة الأوفست: طباعة ورقية تقليدية. أفضل جودة للكميات الكبيرة كالكتيبات والمطبوعات." }
+}
