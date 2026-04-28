@@ -13,8 +13,14 @@ let currentLang = "en";
 // ════════════════════════════════════════════════════════════
 
 function applyTheme(theme) {
-  THEMES.forEach(t => document.body.classList.remove(t));
-  document.body.classList.add(theme);
+  // Remove all known theme variants safely (classList, not className)
+  const ALL_THEMES = [
+    "blue-dark","blue-light","beige-dark","beige-light",
+    "purple-dark","purple-light","white-light","white-dark",
+    "dark","light"
+  ];
+  ALL_THEMES.forEach(t => document.body.classList.remove(t));
+  if (theme) document.body.classList.add(theme);
   localStorage.setItem("a3m_theme", theme);
 }
 
@@ -107,7 +113,16 @@ function applyLang(lang) {
 
   // ── Banner ──
   const bannerMain = document.getElementById('bannerMain');
-  if (bannerMain) bannerMain.innerHTML = t.bannerMain + '<span id="bannerSub"> ' + t.bannerSub + '</span>';
+  if (bannerMain) {
+    const sub = bannerMain.querySelector('#bannerSub');
+    if (sub) {
+      // Already structured — only update text
+      bannerMain.firstChild.textContent = t.bannerMain;
+      sub.textContent = ' ' + t.bannerSub;
+    } else {
+      bannerMain.innerHTML = t.bannerMain + '<span id="bannerSub"> ' + t.bannerSub + '</span>';
+    }
+  }
 
   // ── Category buttons ──
   const catBtnMap = {
@@ -146,10 +161,15 @@ function applyLang(lang) {
     if (trustTexts[lang]?.[i]) b.textContent = trustTexts[lang][i];
   });
 
-  // ── Account button ──
+  // ── Account button — only update if NOT enhanced (acc-btn class) ──
   const accBtn = document.getElementById('accountNavBtn');
-  if (accBtn && !window.currentUser) {
+  if (accBtn && !window.currentUser && !accBtn.classList.contains('acc-btn')) {
     accBtn.innerHTML = lang==='ar' ? '👤 حساب' : lang==='fr' ? '👤 Compte' : '👤 Account';
+  }
+  // If enhanced acc-btn — only update the label text, keep structure intact
+  if (accBtn && accBtn.classList.contains('acc-btn')) {
+    const lbl = accBtn.querySelector('.acc-label');
+    if (lbl) lbl.textContent = lang==='ar' ? 'حسابي' : lang==='fr' ? 'Compte' : 'Account';
   }
 
   // ── Cart title ──
@@ -302,7 +322,16 @@ Object.assign(window, {
 document.addEventListener("DOMContentLoaded", () => {
   loadTheme();
   const savedLang = localStorage.getItem("a3m_lang") || "ar";
-  setTimeout(() => applyLang(savedLang), 50); // انتظر data.js يحمل window.T
+  // Wait for data.js to load window.T before applying lang
+  if (window._a3mModulesReady) {
+    setTimeout(() => applyLang(savedLang), 50);
+  } else {
+    window.addEventListener('a3m-ready', () => {
+      setTimeout(() => applyLang(savedLang), 50);
+    }, { once: true });
+    // Fallback after 500ms
+    setTimeout(() => { if (!window._a3mModulesReady) applyLang(savedLang); }, 500);
+  }
 
   // Close lang dropdown on outside click
   document.addEventListener("click", e => {
@@ -317,5 +346,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("orderModal")   ?.addEventListener("click", e => { if (e.target === e.currentTarget) closeOrderForm(); });
   document.getElementById("modePicker")   ?.addEventListener("click", e => { if (e.target === e.currentTarget) closeModePicker(); });
 });
+
+// ── _applyFullLang — called by config.js/a3m-settings.js ──
+window._applyFullLang = function(lang) {
+  // Don't run if designer is open (avoid disrupting canvas state)
+  const dm = document.getElementById('designerModal');
+  if (dm && dm.classList.contains('open')) return;
+  applyLang(lang);
+};
 
 export { applyLang, setLang, applyTheme, loadTheme, showPrint, goToCheckout };

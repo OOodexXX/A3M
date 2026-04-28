@@ -231,22 +231,26 @@
     applyPublishTranslation();
   }
 
-  // Watch for designer modal to open
-  var _origOpenDesigner = window.openDesigner;
+  // Watch designer modal via MutationObserver — don't patch openDesigner
+  // (patching openDesigner breaks other patches in index.html)
   document.addEventListener("DOMContentLoaded", function () {
-    // Try patching openDesigner
-    var _orig2 = window.openDesigner;
-    window.openDesigner = function () {
-      if (_orig2) _orig2.apply(this, arguments);
-      setTimeout(function () { injectPublishButton(); applyPublishTranslation(); }, 150);
-    };
-
-    // Also try immediately (in case designer is already open)
+    // Init after a short delay
     setTimeout(tryInit, 500);
+
+    // Watch for modal open via MutationObserver
+    var dm = document.getElementById('designerModal');
+    if (dm) {
+      new MutationObserver(function() {
+        if (dm.classList.contains('open')) {
+          setTimeout(function() {
+            injectPublishButton();
+            applyPublishTranslation();
+          }, 150);
+        }
+      }).observe(dm, { attributes: true, attributeFilter: ['class'] });
+    }
   });
 
-  // Also handle the ps-overlay flow
-  var _origInitDesigner = window.initDesigner;
   if (document.readyState !== "loading") {
     setTimeout(tryInit, 600);
   }

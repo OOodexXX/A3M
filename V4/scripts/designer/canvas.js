@@ -725,7 +725,19 @@
     injectRulerCanvas, drawRulers, setBg,
     toggleGrid, toggleSnap, togglePrintArea, toggleAspectLock,
     notifyChange, showToast, layerAt,
+    getCanvasXY, hitTestLayer,
   };
+
+
+  // ── getCanvasXY: used by designer.js ──
+  function getCanvasXY(e) {
+    return getCanvasPoint(e);
+  }
+
+  // ── hitTestLayer: used by designer.js ──
+  function hitTestLayer(layer, px, py) {
+    return layerAt(px, py) === layer;
+  }
 
   window._A3MCanvas = _obj;
 

@@ -4,7 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>إتمام الطلب — A3M Print</title>
-  <link rel="stylesheet" href="../style/index.css"/>
+  <link rel="stylesheet" href="../styles/index.css"/>
+  <link rel="stylesheet" href="../styles/pages/checkout.css"/>
   <style>
     /* ── Checkout page specific ── */
     .checkout-page { min-height: 100vh; background: var(--bg); }
@@ -249,7 +250,7 @@
       </div>
 
       <div id="checkout-feedback"></div>
-      <button id="placeOrderBtn" onclick="placeOrder()">✦ تأكيد الطلب</button>
+      <button id="placeOrderBtn" onclick="placeOrder()">✦ تأكيد الطلب — <span id="pobTotal">—</span></button>
 
       <!-- Trust badges -->
       <div class="trust-badges">
@@ -353,27 +354,60 @@
     const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
     const container = document.getElementById("checkoutItems");
     if (!container) return;
-    if (!cart.length) { container.innerHTML = "<p style='color:var(--txt3)'>السلة فارغة</p>"; return; }
+
+    if (!cart.length) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:2rem 1rem;color:var(--txt3);">
+          <div style="font-size:2.5rem;margin-bottom:.6rem">🛒</div>
+          <div style="font-weight:700;font-size:14px;color:var(--txt2)">السلة فارغة</div>
+          <a href="../index.html" style="color:var(--accent);font-size:13px;display:block;margin-top:.6rem">← العودة للمتجر</a>
+        </div>`;
+      return;
+    }
+
     const sub  = cart.reduce((s,i) => s + i.price * i.qty, 0);
-    const bulk = sub >= 5000 ? sub * 0.20 : 0;
+    const bulk = sub >= 5000 ? Math.round(sub * 0.20) : 0;
     const aft  = sub - bulk;
-    const code = Math.round(aft * (checkoutDiscount / 100));
+    const code = checkoutDiscount > 0 ? Math.round(aft * (checkoutDiscount / 100)) : 0;
     const tot  = aft - code;
+
+    // Update place order button total
+    const pobTotal = document.getElementById('pobTotal');
+    if (pobTotal) pobTotal.textContent = tot.toLocaleString() + ' دج';
+
     container.innerHTML = cart.map(i => `
       <div class="checkout-item">
-        <span class="checkout-item-emoji">${i.emoji||''}</span>
-        <div style="flex:1">
+        <span class="checkout-item-emoji">${i.emoji||'🛍️'}</span>
+        <div style="flex:1;min-width:0;">
           <div class="checkout-item-name">${i.name}</div>
+          ${i.designComplexity ? `<div style="font-size:10px;color:var(--txt4);margin-top:1px">⚡ ${i.designComplexity}</div>` : ''}
           <div class="checkout-item-qty">× ${i.qty}</div>
         </div>
         <span class="checkout-item-price">${(i.price*i.qty).toLocaleString()} دج</span>
-      </div>`).join('') + `
-      <div class="checkout-totals">
-        ${bulk > 0 ? `<div><span>خصم الجملة (20%)</span><span style="color:#16a34a">- ${bulk.toLocaleString()} دج</span></div>` : ''}
-        ${code > 0 ? `<div><span>خصم الكود (${checkoutDiscount}%)</span><span style="color:#16a34a">- ${code.toLocaleString()} دج</span></div>` : ''}
-        <div class="checkout-final"><span>المجموع الكلي</span><span>${tot.toLocaleString()} دج</span></div>
-      </div>`;
-    // sync discount to checkout.js
+      </div>`).join('')
+    + `<div class="checkout-totals">
+        <div style="display:flex;justify-content:space-between;font-size:13px;padding:.3rem 0;color:var(--txt3)">
+          <span>المجموع الجزئي</span><span>${sub.toLocaleString()} دج</span>
+        </div>
+        ${bulk > 0 ? `<div style="display:flex;justify-content:space-between;font-size:13px;padding:.3rem 0;">
+          <span style="color:#16a34a">🎉 خصم الجملة (20%)</span>
+          <span style="color:#16a34a;font-weight:700">− ${bulk.toLocaleString()} دج</span>
+        </div>` : ''}
+        ${code > 0 ? `<div style="display:flex;justify-content:space-between;font-size:13px;padding:.3rem 0;">
+          <span style="color:#16a34a">🏷️ خصم الكود (${checkoutDiscount}%)</span>
+          <span style="color:#16a34a;font-weight:700">− ${code.toLocaleString()} دج</span>
+        </div>` : ''}
+        <div class="checkout-final">
+          <span>المجموع الكلي</span>
+          <span>${tot.toLocaleString()} دج</span>
+        </div>
+      </div>
+      <!-- Bulk discount nudge -->
+      ${sub < 5000 && sub > 2000 ? `
+      <div style="margin-top:.8rem;padding:.6rem .8rem;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:10px;font-size:11.5px;color:#c9a84c;">
+        💡 أضف ${(5000-sub).toLocaleString()} دج للحصول على خصم 20% على الجملة!
+      </div>` : ''}`;
+
     window.checkoutDiscount = checkoutDiscount;
   }
 

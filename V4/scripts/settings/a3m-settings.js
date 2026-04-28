@@ -82,6 +82,10 @@
       }
     }));
 
+    // Don't run if designer is open
+    var dm2 = document.getElementById('designerModal');
+    if (dm2 && dm2.classList.contains('open')) return;
+
     // Call page-specific translation functions if they exist
     if (typeof window.applyI18n === "function") window.applyI18n(lang);
     if (typeof window.applyNavExtras === "function") window.applyNavExtras(lang);
@@ -94,8 +98,17 @@
   }
 
   // ── Apply Theme ──
+  // All known theme classes
+  var THEME_CLASSES = [
+    "blue-dark","blue-light","beige-dark","beige-light",
+    "purple-dark","purple-light","white-light","white-dark",
+    "dark","light"
+  ];
+
   function applyTheme(theme) {
-    document.body.className = theme;
+    // Remove ALL theme classes without touching other classes (designer-open etc.)
+    THEME_CLASSES.forEach(function(t) { document.body.classList.remove(t); });
+    document.body.classList.add(theme);
     // Update any theme icon in nav
     const icon = document.getElementById("themeIcon");
     if (icon) icon.textContent = theme.includes("dark") ? "🌙" : "☀️";
@@ -151,6 +164,9 @@
       var s = loadSettings();
       applyTheme(s.theme);
       applyCurrency(s.currency);
+      // Don't apply lang if designer is open
+      var dm = document.getElementById('designerModal');
+      if (dm && dm.classList.contains('open')) return;
       // Lang applied after DOM ready for translations
       applyLang(s.lang);
     },
@@ -167,12 +183,31 @@
   applyTheme(_s.theme);
 
   // Apply rest after DOM is ready
+  function _safeApplyAll() {
+    // Wait for a3m-ready if modules haven't loaded yet
+    if (window._a3mModulesReady) {
+      A3MSettings.applyAll();
+    } else {
+      // Apply theme immediately, defer lang to after modules load
+      var s = loadSettings();
+      applyTheme(s.theme);
+      applyCurrency(s.currency);
+      window.addEventListener('a3m-ready', function() {
+        setTimeout(function() { A3MSettings.applyAll(); }, 80);
+      }, { once: true });
+      // Fallback
+      setTimeout(function() {
+        if (!window._a3mModulesReady) A3MSettings.applyAll();
+      }, 800);
+    }
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () { A3MSettings.applyAll(); }, 100);
+      setTimeout(_safeApplyAll, 150);
     });
   } else {
-    setTimeout(function () { A3MSettings.applyAll(); }, 100);
+    setTimeout(_safeApplyAll, 150);
   }
 
   // ── Patch window.setLang so existing pages auto-persist ──

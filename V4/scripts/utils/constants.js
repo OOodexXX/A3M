@@ -1,99 +1,97 @@
 // ============================================================
-// utils/constants.js  –  A3M Print  –  ثوابت التطبيق
-// Single source of truth for all magic values
+// utils/constants.js  –  A3M Print  –  ثوابت المشروع
 // ============================================================
 
-// ── Storage Keys ──
-export const CART_KEY = "a3m_cart"; // standalone export — مطلوب من config.js
-
+// ── LocalStorage keys ──
 export const LS = {
-  CART:       "a3m_cart",
-  USER:       "a3m_user",
-  USERS:      "a3m_users",
-  LANG:       "a3m_lang",
-  THEME:      "a3m_theme",
-  SETTINGS:   "a3m_settings",
-  DESIGNS:    "a3m_designs",
-  ORDERS:     "a3m_orders",
-  COMMUNITY:  "a3m_community_designs",
-  XP:         "a3m_xp",
-  AI_MODE:    "a3m_ai_mode",
-  AI_KEY:     "a3m_ai_key",
-  AI_PROXY:   "a3m_ai_proxy_url",
-  AI_MODEL:   "a3m_ai_model",
+  CART:      'a3m_cart',
+  USER:      'a3m_user',
+  USERS:     'a3m_users',
+  SETTINGS:  'a3m_settings',
+  DESIGNS:   'a3m_designs',
+  ORDERS:    'a3m_orders',
+  COMMUNITY: 'a3m_community',
+  XP:        'a3m_xp',
+  LANG:      'a3m_lang',
+  THEME:     'a3m_theme',
 };
 
-// ── Currency ──
-export const DZD_PER_USD = 254;
+// ── Defaults ──
+export const DEFAULT_LANG = 'ar';
+export const DEFAULT_THEME = 'light';
 
+export const DZD_PER_USD     = 135;
+export const CART_KEY        = 'a3m_cart';
+export const BULK_THRESHOLD  = 5000;   // دج — حد خصم الجملة
+export const BULK_RATE       = 0.20;   // 20%
+
+export const DISCOUNT_CODES = {
+  A3M10:   { pct: 10, label: 'خصم 10%'  },
+  A3M20:   { pct: 20, label: 'خصم 20%'  },
+  STUDENT: { pct: 15, label: 'خصم طلابي 15%' },
+  WELCOME: { pct: 25, label: 'خصم ترحيبي 25%' },
+  VIP50:   { pct: 50, label: 'VIP 50%'  },
+  PROMO30: { pct: 30, label: 'عرض خاص 30%' },
+};
+
+// ── Base prices (DZD) per product type ──
+export const BASE_PRICES = {
+  tshirt:  1200,
+  hoodie:  1800,
+  hat:     900,
+  mug:     700,
+  bag:     1100,
+  paper:   200,
+  stamps:  1500,
+  default: 800,
+};
+
+// ── Design complexity pricing constants ──
+export const DESIGN_PRICING = {
+  COLOR_RATE:       50,   // دج per color channel used (0–5 scale)
+  AREA_RATE:        0.08, // دج per cm² of print area
+  IMAGE_SURCHARGE:  150,  // دج flat fee if design contains images/photos
+  TEXT_SURCHARGE:   50,   // دج flat fee if design contains styled text
+  LAYER_RATE:       30,   // دج per layer above 2
+  MAX_COMPLEXITY:   800,  // دج cap on complexity surcharge
+};
+
+
+// ── Currency rates and symbols ──
 export const CURRENCY_RATES = {
   DZD: 1,
-  USD: 0.0074,
-  EUR: 0.0068,
-  GBP: 0.0058,
+  USD: 1 / DZD_PER_USD,
+  EUR: 1 / 145, // مثال: 1 EUR = 145 DZD
+  GBP: 1 / 170, // مثال: 1 GBP = 170 DZD
 };
 
 export const CURRENCY_SYMBOLS = {
-  DZD: "دج",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
+  DZD: 'دج',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
 };
 
-// ── Pricing ──
-export const BULK_THRESHOLD = 5000;   // DZD — orders above this get bulk discount
-export const BULK_RATE      = 0.20;   // 20% bulk discount
 
-export const DISCOUNT_CODES = {
-  A3M10:   { pct: 10 },
-  A3M20:   { pct: 20 },
-  STUDENT: { pct: 15 },
-  WELCOME: { pct: 25 },
-  VIP50:   { pct: 50 },
-};
-
-// ── XP / Rank system ──
+// ── Themes, Languages, XP Ranks/Rewards ──
+export const THEMES = ["light", "dark"];
+export const SUPPORTED_LANGS = ["ar", "en", "fr"];
 export const XP_RANKS = [
-  { name: "🪨 Iron",    cls: "iron",    min: 0,    max: 100   },
-  { name: "🥉 Bronze",  cls: "bronze",  min: 100,  max: 500   },
-  { name: "🥇 Gold",    cls: "gold",    min: 500,  max: 1500  },
-  { name: "💎 Diamond", cls: "diamond", min: 1500, max: 4000  },
-  { name: "⭐ Premium", cls: "premium", min: 4000, max: 99999 },
+  { name: "مبتدئ", min: 0 },
+  { name: "متوسط", min: 100 },
+  { name: "خبير", min: 500 },
+  { name: "أسطورة", min: 1000 }
 ];
-
 export const XP_REWARDS = {
-  PUBLISH_DESIGN: 20,
-  PER_100_DZD:    1,   // XP earned per 100 DZD spent
+  order: 10,
+  design: 5,
+  share: 2
 };
 
-// ── Themes ──
-export const THEMES = [
-  "blue-dark", "blue-light",
-  "beige-dark", "beige-light",
-  "purple-dark", "purple-light",
-  "white-light", "white-dark",
-];
-export const DEFAULT_THEME = "blue-dark";
-export const DEFAULT_LANG  = "ar";
-
-// ── App ──
-export const SUPPORTED_LANGS  = ["ar", "en", "fr"];
-export const FIREBASE_PROJECT  = "a3mmedia-b4abb";
-
-// ── Re-export to window for non-module scripts ──
-Object.assign(window, {
-  CART_KEY,
-  LS,
-  DZD_PER_USD,
-  CURRENCY_RATES,
-  CURRENCY_SYMBOLS,
-  BULK_THRESHOLD,
-  BULK_RATE,
-  DISCOUNT_CODES,
-  XP_RANKS,
-  XP_REWARDS,
-  THEMES,
-  DEFAULT_THEME,
-  DEFAULT_LANG,
-  SUPPORTED_LANGS,
-});
+// Expose to window for non-module scripts
+if (typeof window !== 'undefined') {
+  window.A3M_CONSTANTS = {
+    DZD_PER_USD, CART_KEY, BULK_THRESHOLD, BULK_RATE,
+    DISCOUNT_CODES, BASE_PRICES, DESIGN_PRICING,
+  };
+}
