@@ -95,6 +95,21 @@
 
     // Also call the main setLang if it exists (but avoid infinite recursion)
     if (typeof window._origSetLang === "function") window._origSetLang(lang);
+
+    // ✅ FIX: بعد أي تغيير لغة، تأكد إن الفوتر والـ bot لا يزالان ظاهرين
+    setTimeout(function() {
+      var dm = document.getElementById('designerModal');
+      var ps = document.getElementById('psOverlay');
+      var designerOpen = dm && dm.classList.contains('open');
+      var psOpen = ps && ps.classList.contains('active');
+      if (!designerOpen && !psOpen) {
+        document.querySelectorAll('footer, footer.footer, .footer').forEach(function(el) {
+          el.style.removeProperty('display');
+        });
+        var bot = document.getElementById('a3m-bot-wrap');
+        if (bot) bot.style.removeProperty('display');
+      }
+    }, 100);
   }
 
   // ── Apply Theme ──
@@ -106,9 +121,17 @@
   ];
 
   function applyTheme(theme) {
-    // Remove ALL theme classes without touching other classes (designer-open etc.)
+    // ✅ FIX: احفظ الـ classes المهمة قبل المسح
+    var keepClasses = ['designer-open', 'ps-open'];
+    var kept = keepClasses.filter(function(c) { return document.body.classList.contains(c); });
+
+    // Remove ALL theme classes without touching other classes
     THEME_CLASSES.forEach(function(t) { document.body.classList.remove(t); });
     document.body.classList.add(theme);
+
+    // ✅ أعِد الـ classes المهمة
+    kept.forEach(function(c) { document.body.classList.add(c); });
+
     // Update any theme icon in nav
     const icon = document.getElementById("themeIcon");
     if (icon) icon.textContent = theme.includes("dark") ? "🌙" : "☀️";

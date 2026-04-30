@@ -608,18 +608,30 @@ input[type="range"].d-range::-webkit-slider-thumb:hover { transform:scale(1.2); 
   cursor: cell !important;
 }
 
-/* ── Prevent any sibling modal leaking into designer view ── */
-.designer-modal ~ * { visibility: hidden; pointer-events: none; }
-.designer-modal.open ~ * { visibility: hidden; pointer-events: none; }
-/* Re-show modals that should appear above designer ── */
+/* ── Prevent sibling content from showing OVER the open designer ── */
+/* ✅ FIX: أزلنا القاعدة بدون .open لأنها كانت تخفي الفوتر دائماً */
+.designer-modal.open ~ *:not(#siteFooter):not(footer):not(#a3m-bot-wrap):not(#toast):not(.toast-msg):not(#preview3dModal):not(#ds-publish-modal) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
 .designer-modal.open ~ .order-modal.open,
 .designer-modal.open ~ #preview3dModal.open,
 .designer-modal.open ~ #prodModal.open,
 .designer-modal.open ~ #cartModal.open,
 .designer-modal.open ~ #authModal.open,
-.designer-modal.open ~ #psOverlay.open {
+.designer-modal.open ~ #psOverlay.open,
+.designer-modal.open ~ #ds-publish-modal,
+.designer-modal.open ~ #toast,
+.designer-modal.open ~ .toast-msg {
   visibility: visible;
   pointer-events: auto;
+}
+/* ✅ FIX: الفوتر والـ AI bot يظهران دائماً عند إغلاق الدزاينر */
+.designer-modal:not(.open) ~ #siteFooter,
+.designer-modal:not(.open) ~ footer,
+.designer-modal:not(.open) ~ #a3m-bot-wrap {
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -631,9 +643,7 @@ body.designer-open {
   overflow: hidden !important;
   height: 100vh !important;
   width: 100vw !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  /* ✅ FIX: حذف position:fixed لأنه يسبب scroll jump عند الإغلاق */
 }
 
 /* Designer modal fills 100% viewport absolutely */
@@ -647,10 +657,18 @@ body.designer-open {
 }
 
 /* Hide ALL body children except designer when open */
-body.designer-open > *:not(#designerModal) {
+/* ✅ FIX: استثني الفوتر والـ bot من الإخفاء */
+body.designer-open > *:not(#designerModal):not(#siteFooter):not(footer):not(#a3m-bot-wrap) {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+/* الفوتر والـ bot — مخفيان عند الدزاينر لكن بـ visibility لا display */
+body.designer-open > #siteFooter,
+body.designer-open > footer,
+body.designer-open > #a3m-bot-wrap {
+  display: none !important;
 }
 
 /* Re-show modals that can open OVER the designer */
@@ -665,4 +683,11 @@ body.designer-open > #cartModal.open {
   visibility: visible !important;
   pointer-events: auto !important;
   z-index: 9500 !important;
+}
+/* ✅ AI bot يظهر فوق الدزاينر */
+body.designer-open > #a3m-bot-wrap {
+  display: block !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 99999 !important;
 }

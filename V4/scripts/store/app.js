@@ -1,258 +1,339 @@
 // ============================================================
-// core/app.js  –  A3M Print  –  UI Orchestration
-// Nav translations, sidebar, modals, order form, category filter
-// Depends on: config.js, utils/helpers.js, utils/constants.js
+// core/app.js  –  A3M Print  –  ثيم، لغة، سايدبار، مودالات
 // ============================================================
 
-import { setLang, applyLang } from "./config.js";
-import { safe, safeHTML, val, showToast, goToCheckout, bindBackdropClose } from "../utils/helpers.js";
-import { LS } from "../utils/constants.js";
+import { THEMES, DEFAULT_THEME } from "../utils/constants.js";
+import { showToast, safe, safeHTML } from "../utils/helpers.js";
 
-// ── State ─────────────────────────────────────────────────────
-let isDark = true;
+let isDark      = true;
+let currentLang = "en";
 
-// ── Full language translation ─────────────────────────────────
-// Called by config.js via window._applyFullLang hook
+// ════════════════════════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════════════════════════
 
-function _applyFullLang(lang) {
-  const t = window.T?.[lang];
-  if (!t) return;
-
-  // ── Nav ──
-  const langBtn = document.getElementById("langBtn");
-  if (langBtn) langBtn.textContent = `${t.flag} ${t.code} ▾`;
-  document.querySelectorAll(".lang-option").forEach((el, i) =>
-    el.classList.toggle("active", ["en", "fr", "ar"][i] === lang)
-  );
-
-  safe("n-home",    t.home);
-  safe("n-products",t.products);
-  safe("n-design",  t.design);
-  safe("n-contact", t.contact);
-
-  // ── Hero ──
-  safe("heroEyebrow",   t.eyebrow);
-  safe("heroSub",       t.sub);
-  safe("shopNowBtn",    t.shopNow);
-  safe("startDesignBtn",  t.startDesign);
-  safe("startDesignBtn2", t.startDesign2);
-
-  // ── Banner ──
-  const bannerMain = document.getElementById("bannerMain");
-  if (bannerMain) bannerMain.innerHTML = t.bannerMain + '<span id="bannerSub"> ' + t.bannerSub + "</span>";
-
-  // ── Section title ──
-  const secTitle = document.getElementById("sectionTitle");
-  if (secTitle) secTitle.innerHTML = t.secTitle;
-  safe("sectionSub", t.secSub);
-
-  // ── CTA buttons ──
-  safe("designNowBtn", t.designNow);
-
-  // ── Theme label ──
-  const themeLabel = document.getElementById("themeLabel");
-  if (themeLabel) themeLabel.textContent = isDark ? t.thDark : t.thLight;
-
-  // ── Category filter buttons ──
-  const catBtnMap = {
-    "c-all":    t.cAll,
-    "c-tshirt": t.cTshirt,
-    "c-hoodie": t.cHoodie || "🧥 Hoodies",
-    "c-hat":    t.cHat    || "🧢 Caps",
-    "c-mug":    t.cMug    || "☕ Mugs",
-    "c-bag":    t.cBag,
-    "c-laser":  t.cLaser,
-    "c-paper":  t.cPaper,
-  };
-  Object.entries(catBtnMap).forEach(([id, txt]) => { if (txt) safe(id, txt); });
-
-  // ── Mode picker ──
-  safe("modePickerSub",   t.modePickerSub);
-  safe("modeTemplate",    t.modeTemplate);
-  safe("modeTemplateDesc",t.modeTemplateDesc);
-  safe("modeScratch",     t.modeScratch);
-  safe("modeScratchDesc", t.modeScratchDesc);
-
-  // ── Sidebar ──
-  safe("sb-order", t.sbOrder);
-  safe("sb-disc",  t.sbDisc || "Discounts");
-  safe("orderTitle", t.orderTitle);
-
-  // ── Order form labels ──
-  ["fName","fPhone","fEmail","fProduct","fQty","fBudget","fPrintType","fCity","fNotes","submitBtn"]
-    .forEach(id => { if (t[id]) safe(id, t[id]); });
-
-  // ── Footer ──
-  safe("footerTagline", t.footer);
-  safe("footerLinksTitle", t.footerLinksTitle ||
-    (lang === "ar" ? "روابط سريعة" : lang === "fr" ? "Liens rapides" : "Quick Links"));
-  safe("footerContactTitle", t.footerContactTitle ||
-    (lang === "ar" ? "تواصل معنا" : lang === "fr" ? "Nous contacter" : "Contact Us"));
-  safe("footerCopy", t.footerCopy ||
-    (lang === "ar" ? "© 2024 A3M Print. جميع الحقوق محفوظة." : "© 2024 A3M Print. All rights reserved."));
-
-  const footerLinks     = document.querySelectorAll(".footer-links a");
-  const footerLinkTexts = {
-    ar: ["🛍️ المنتجات","🎨 تصميم","📋 طلب مخصص","👤 حسابي"],
-    en: ["🛍️ Products","🎨 Design","📋 Custom Order","👤 My Account"],
-    fr: ["🛍️ Produits","🎨 Créer","📋 Commande","👤 Mon Compte"],
-  };
-  footerLinks.forEach((a, i) => {
-    if (footerLinkTexts[lang]?.[i]) a.textContent = footerLinkTexts[lang][i];
-  });
-
-  // ── Trust badges (checkout page) ──
-  const trustTexts = {
-    ar: ["🔒 دفع آمن","✅ جودة مضمونة","🔄 استرداد سهل","📞 دعم 24/7"],
-    en: ["🔒 Secure Payment","✅ Quality Guaranteed","🔄 Easy Returns","📞 24/7 Support"],
-    fr: ["🔒 Paiement sécurisé","✅ Qualité garantie","🔄 Retours faciles","📞 Support 24/7"],
-  };
-  document.querySelectorAll(".trust-badge").forEach((b, i) => {
-    if (trustTexts[lang]?.[i]) b.textContent = trustTexts[lang][i];
-  });
-
-  // ── Account nav button ──
-  const accBtn = document.getElementById("accountNavBtn");
-  if (accBtn && !window.currentUser) {
-    accBtn.innerHTML = lang === "ar" ? "👤 حساب" : lang === "fr" ? "👤 Compte" : "👤 Account";
-  }
-
-  // ── Cart ──
-  const cartTitle = document.getElementById("cartTitle");
-  if (cartTitle && t.cartTitle) cartTitle.textContent = t.cartTitle;
-
-  // Re-render dynamic content with new language
-  window.updateCart?.();
-  window.renderProducts?.(window.currentCat || "all");
+function applyTheme(theme) {
+  // Remove all known theme variants safely (classList, not className)
+  const ALL_THEMES = [
+    "blue-dark","blue-light","beige-dark","beige-light",
+    "purple-dark","purple-light","white-light","white-dark",
+    "dark","light"
+  ];
+  ALL_THEMES.forEach(t => document.body.classList.remove(t));
+  if (theme) document.body.classList.add(theme);
+  localStorage.setItem("a3m_theme", theme);
 }
 
-// Register hook for config.js
-window._applyFullLang = _applyFullLang;
+function loadTheme() {
+  applyTheme(localStorage.getItem("a3m_theme") || DEFAULT_THEME);
+}
 
-// ── Theme toggle ──────────────────────────────────────────────
+function setTheme(theme) {
+  if (THEMES.includes(theme)) applyTheme(theme);
+}
 
 function toggleTheme() {
   isDark = !isDark;
-  document.body.classList.toggle("dark",  isDark);
-  document.body.classList.toggle("light", !isDark);
-  const icon  = document.getElementById("themeIcon");
-  const label = document.getElementById("themeLabel");
-  if (icon)  icon.textContent = isDark ? "🌙" : "☀️";
-  if (label && window.T?.[window.currentLang]) {
-    const t = window.T[window.currentLang];
-    label.textContent = isDark ? t.thDark : t.thLight;
+  document.body.classList.toggle('dark',  isDark);
+  document.body.classList.toggle('light', !isDark);
+  const themeIcon  = document.getElementById('themeIcon');
+  const themeLabel = document.getElementById('themeLabel');
+  if (themeIcon)  themeIcon.textContent = isDark ? '🌙' : '☀️';
+  if (themeLabel && window.T?.[currentLang]) {
+    themeLabel.textContent = isDark
+      ? window.T[currentLang].thDark
+      : window.T[currentLang].thLight;
   }
 }
 
-function toggleLangMenu() {
-  document.getElementById("langDropdown")?.classList.toggle("open");
+// ════════════════════════════════════════════════════════════
+// CURRENCY
+// ════════════════════════════════════════════════════════════
+
+function setCurrency(c) {
+  window.currency = c;
+  document.getElementById('btnDZD')?.classList.toggle('active', c === 'DZD');
+  document.getElementById('btnUSD')?.classList.toggle('active', c === 'USD');
+  if (typeof renderProducts  === 'function') renderProducts(window.currentCat || 'all');
+  if (typeof updateCart      === 'function') updateCart();
+  if (window.currentModalProduct && typeof updateModalTotal === 'function') updateModalTotal();
 }
 
-// ── Sidebar ───────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// LANGUAGE
+// ════════════════════════════════════════════════════════════
+
+function applyLang(lang) {
+  currentLang = lang;
+  window.currentLang = lang;
+  localStorage.setItem("a3m_lang", lang);
+  const t = window.T?.[lang];
+  if (!t) return;
+
+  // ✅ FIX: dir على html وليس body — حتى لا تتأثر CSS variables
+  document.documentElement.setAttribute('dir', t.dir);
+  document.documentElement.setAttribute('lang', lang);
+  document.body.style.fontFamily = lang === 'ar' ? "'Cairo',sans-serif" : "'Inter',sans-serif";
+
+  // ── Nav ──
+  const langBtn = document.getElementById('langBtn');
+  if (langBtn) langBtn.textContent = `${t.flag} ${t.code} ▾`;
+  document.querySelectorAll('.lang-option').forEach((el, i) =>
+    el.classList.toggle('active', ['en','fr','ar'][i] === lang));
+
+  safe('n-home', t.home);       safe('n-products', t.products);
+  safe('n-design', t.design);   safe('n-contact', t.contact);
+
+  // ── Hero ──
+  safe('heroEyebrow', t.eyebrow);   safe('heroSub', t.sub);
+  safe('shopNowBtn', t.shopNow);    safe('startDesignBtn', t.startDesign);
+  safe('startDesignBtn2', t.startDesign2);
+
+  // ── Section ──
+  safe('sectionSub', t.secSub);
+  safeHTML('sectionTitle', t.secTitle);
+  safe('designNowBtn', t.designNow);
+
+  // ── Footer ──
+  safe('footerTagline', t.footer);
+  safe('footerLinksTitle',   t.footerLinksTitle   || (lang==='ar' ? 'روابط سريعة'  : lang==='fr' ? 'Liens rapides'    : 'Quick Links'));
+  safe('footerContactTitle', t.footerContactTitle || (lang==='ar' ? 'تواصل معنا'  : lang==='fr' ? 'Nous contacter'   : 'Contact Us'));
+  safe('footerCopy',         t.footerCopy         || (lang==='ar' ? '© 2024 A3M Print. جميع الحقوق محفوظة.' : '© 2024 A3M Print. All rights reserved.'));
+
+  const footerLinkTexts = {
+    ar: ['🛍️ المنتجات', '🎨 تصميم', '📋 طلب مخصص', '👤 حسابي'],
+    en: ['🛍️ Products',  '🎨 Design', '📋 Custom Order', '👤 My Account'],
+    fr: ['🛍️ Produits',  '🎨 Créer',  '📋 Commande',     '👤 Mon Compte'],
+  };
+  document.querySelectorAll('.footer-links a').forEach((a, i) => {
+    if (footerLinkTexts[lang]?.[i]) a.textContent = footerLinkTexts[lang][i];
+  });
+
+  // ── Theme label ──
+  const themeLabel = document.getElementById('themeLabel');
+  if (themeLabel) themeLabel.textContent = isDark ? t.thDark : t.thLight;
+
+  // ── Banner ──
+  const bannerMain = document.getElementById('bannerMain');
+  if (bannerMain) {
+    const sub = bannerMain.querySelector('#bannerSub');
+    if (sub) {
+      // Already structured — only update text
+      bannerMain.firstChild.textContent = t.bannerMain;
+      sub.textContent = ' ' + t.bannerSub;
+    } else {
+      bannerMain.innerHTML = t.bannerMain + '<span id="bannerSub"> ' + t.bannerSub + '</span>';
+    }
+  }
+
+  // ── Category buttons ──
+  const catBtnMap = {
+    'c-all':    t.cAll,
+    'c-tshirt': t.cTshirt,
+    'c-hoodie': t.cHoodie || '🧥 Hoodies',
+    'c-hat':    t.cHat    || '🧢 Caps',
+    'c-mug':    t.cMug    || '☕ Mugs',
+    'c-bag':    t.cBag,
+    'c-laser':  t.cLaser,
+    'c-paper':  t.cPaper,
+  };
+  Object.entries(catBtnMap).forEach(([id, val]) => { if (val) safe(id, val); });
+
+  // ── Order form labels ──
+  ['fName','fPhone','fEmail','fProduct','fQty','fBudget','fPrintType','fCity','fNotes','submitBtn']
+    .forEach(id => { const el = document.getElementById(id); if (el && t[id]) el.textContent = t[id]; });
+
+  // ── Mode picker ──
+  safe('modePickerSub',    t.modePickerSub);
+  safe('modeTemplate',     t.modeTemplate);     safe('modeTemplateDesc', t.modeTemplateDesc);
+  safe('modeScratch',      t.modeScratch);       safe('modeScratchDesc',  t.modeScratchDesc);
+
+  // ── Sidebar ──
+  safe('orderTitle', t.orderTitle);
+  safe('sb-order',   t.sbOrder);
+  safe('sb-disc',    t.sbDisc || 'Discounts');
+
+  // ── Trust badges (checkout) ──
+  const trustTexts = {
+    ar: ['🔒 دفع آمن', '✅ جودة مضمونة', '🔄 استرداد سهل', '📞 دعم 24/7'],
+    en: ['🔒 Secure Payment', '✅ Quality Guaranteed', '🔄 Easy Returns', '📞 24/7 Support'],
+    fr: ['🔒 Paiement sécurisé', '✅ Qualité garantie', '🔄 Retours faciles', '📞 Support 24/7'],
+  };
+  document.querySelectorAll('.trust-badge').forEach((b, i) => {
+    if (trustTexts[lang]?.[i]) b.textContent = trustTexts[lang][i];
+  });
+
+  // ── Account button — only update if NOT enhanced (acc-btn class) ──
+  const accBtn = document.getElementById('accountNavBtn');
+  if (accBtn && !window.currentUser && !accBtn.classList.contains('acc-btn')) {
+    accBtn.innerHTML = lang==='ar' ? '👤 حساب' : lang==='fr' ? '👤 Compte' : '👤 Account';
+  }
+  // If enhanced acc-btn — only update the label text, keep structure intact
+  if (accBtn && accBtn.classList.contains('acc-btn')) {
+    const lbl = accBtn.querySelector('.acc-label');
+    if (lbl) lbl.textContent = lang==='ar' ? 'حسابي' : lang==='fr' ? 'Compte' : 'Account';
+  }
+
+  // ── Cart title ──
+  const cartTitle = document.getElementById('cartTitle');
+  if (cartTitle && t.cartTitle) cartTitle.textContent = t.cartTitle;
+
+  // ── Re-render dynamic content ──
+  if (typeof updateCart      === 'function') updateCart();
+  if (typeof renderProducts  === 'function') renderProducts(window.currentCat || 'all');
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  window.currentLang = lang;
+  localStorage.setItem("a3m_lang", lang);
+  ['langDropdown','globeDd','langDrop'].forEach(id =>
+    document.getElementById(id)?.classList.remove('open'));
+  applyLang(lang);
+}
+
+function toggleLangMenu() {
+  document.getElementById('langDropdown')?.classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════════════════════
 
 function openSidebar() {
-  document.getElementById("sidebar")?.classList.add("open");
-  document.getElementById("sidebarOverlay")?.classList.add("open");
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('sidebarOverlay')?.classList.add('open');
 }
-
 function closeSidebar() {
-  document.getElementById("sidebar")?.classList.remove("open");
-  document.getElementById("sidebarOverlay")?.classList.remove("open");
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay')?.classList.remove('open');
+}
+function toggleSB(el, subId) {
+  el.classList.toggle('open');
+  const sub = document.getElementById('sub-' + subId);
+  if (sub) sub.style.display = el.classList.contains('open') ? 'block' : 'none';
 }
 
-function toggleSB(el, subId) {
-  el.classList.toggle("open");
-  const sub = document.getElementById("sub-" + subId);
-  if (sub) sub.style.display = el.classList.contains("open") ? "block" : "none";
+// ════════════════════════════════════════════════════════════
+// CATEGORY FILTER
+// ════════════════════════════════════════════════════════════
+
+function filterCat(cat, el) {
+  window.currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const paperSection = document.getElementById('paperSection');
+  if (paperSection) paperSection.style.display = (cat === 'paper') ? 'block' : 'none';
+  if (typeof renderProducts === 'function') renderProducts(cat);
 }
 
 function filterAndClose(cat) {
   closeSidebar();
-  document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-  const btn = document.getElementById("c-" + cat) || document.getElementById("c-all");
-  if (btn) btn.classList.add("active");
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('c-' + cat) || document.getElementById('c-all');
+  if (btn) btn.classList.add('active');
   window.currentCat = cat;
-  window.renderProducts?.(cat);
-  document.querySelector(".section")?.scrollIntoView({ behavior: "smooth" });
+  if (typeof renderProducts === 'function') renderProducts(cat);
+  document.querySelector('.section')?.scrollIntoView({ behavior: 'smooth' });
 }
 
-// ── Category filter ───────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// MODE PICKER
+// ════════════════════════════════════════════════════════════
 
-function filterCat(cat, el) {
-  window.currentCat = cat;
-  document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
-  if (el) el.classList.add("active");
-  const paperSection = document.getElementById("paperSection");
-  if (paperSection) paperSection.style.display = cat === "paper" ? "block" : "none";
-  window.renderProducts?.(cat);
-}
+function openModePicker()  { document.getElementById('modePicker')?.classList.add('open'); }
+function closeModePicker() { document.getElementById('modePicker')?.classList.remove('open'); }
 
-// ── Mode picker ───────────────────────────────────────────────
-
-function openModePicker() {
-  document.getElementById("modePicker")?.classList.add("open");
-}
-
-function closeModePicker() {
-  document.getElementById("modePicker")?.classList.remove("open");
-}
-
-// ── Order form ────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// ORDER FORM MODAL
+// ════════════════════════════════════════════════════════════
 
 function openOrderForm() {
-  const fc = document.getElementById("formContent");
-  const fs = document.getElementById("formSuccess");
-  const om = document.getElementById("orderModal");
-  if (fc) fc.style.display = "block";
-  if (fs) fs.style.display = "none";
-  om?.classList.add("open");
+  document.getElementById('formContent')?.style && (document.getElementById('formContent').style.display = 'block');
+  document.getElementById('formSuccess')?.style  && (document.getElementById('formSuccess').style.display = 'none');
+  document.getElementById('orderModal')?.classList.add('open');
   closeSidebar();
 }
-
 function closeOrderForm() {
-  document.getElementById("orderModal")?.classList.remove("open");
+  document.getElementById('orderModal')?.classList.remove('open');
 }
-
 function openOrderFromDesign() {
-  window.closeDesigner?.();
+  if (typeof closeDesigner === 'function') closeDesigner();
   openOrderForm();
 }
 
 function submitOrder() {
-  const name    = val("inp-name");
-  const phone   = val("inp-phone");
-  const product = val("inp-product");
-  const qty     = val("inp-qty");
+  const v  = id => document.getElementById(id)?.value?.trim() || '';
+  const name = v('inp-name'), phone = v('inp-phone'),
+        product = v('inp-product'), qty = v('inp-qty');
   if (!name || !phone || !product || !qty) {
-    showToast("⚠️ Please fill required fields");
-    return;
+    showToast('⚠️ Please fill required fields'); return;
   }
-  const fc = document.getElementById("formContent");
-  const fs = document.getElementById("formSuccess");
-  if (fc) fc.style.display = "none";
-  if (fs) fs.style.display = "block";
-  const t = window.T?.[window.currentLang];
+  const fc = document.getElementById('formContent');
+  const fs = document.getElementById('formSuccess');
+  if (fc) fc.style.display = 'none';
+  if (fs) fs.style.display = 'block';
+  const t = window.T?.[currentLang];
   if (t) {
-    safe("successTitle", t.successTitle);
-    safe("successMsg",   t.successMsg);
+    safe('successTitle', t.successTitle);
+    safe('successMsg',   t.successMsg);
   }
 }
 
-// ── Print info ────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// PRINT INFO
+// ════════════════════════════════════════════════════════════
 
 function showPrint(type) {
   if (!window.PRINTS?.[type]) return;
-  const lang = window.currentLang in window.PRINTS[type] ? window.currentLang : "en";
-  showToast(window.PRINTS[type][lang].substring(0, 60) + "...");
+  const lang = window.currentLang in window.PRINTS[type] ? window.currentLang : 'en';
+  showToast(window.PRINTS[type][lang].substring(0, 60) + '...');
   setTimeout(() => alert(window.PRINTS[type][lang]), 100);
 }
 
-// ── Init ──────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════
+
+function goToCheckout() {
+  const inPages = window.location.pathname.includes('/pages/');
+  window.location.href = inPages ? 'checkout.html' : 'pages/checkout.html';
+}
+
+// ════════════════════════════════════════════════════════════
+// EXPOSE TO WINDOW
+// ════════════════════════════════════════════════════════════
+
+Object.assign(window, {
+  applyTheme, loadTheme, setTheme, toggleTheme,
+  setCurrency,
+  applyLang, setLang, toggleLangMenu,
+  filterCat, filterAndClose,
+  openSidebar, closeSidebar, toggleSB,
+  openModePicker, closeModePicker,
+  openOrderForm, closeOrderForm, openOrderFromDesign, submitOrder,
+  showPrint,
+  goToCheckout,
+  currentLang,
+});
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Load saved lang — delay 50ms so data.js can populate window.T first
-  const savedLang = localStorage.getItem(LS.LANG) || "ar";
-  setTimeout(() => applyLang(savedLang), 50);
+  loadTheme();
+  const savedLang = localStorage.getItem("a3m_lang") || "ar";
+  // Wait for data.js to load window.T before applying lang
+  if (window._a3mModulesReady) {
+    setTimeout(() => applyLang(savedLang), 50);
+  } else {
+    window.addEventListener('a3m-ready', () => {
+      setTimeout(() => applyLang(savedLang), 50);
+    }, { once: true });
+    // Fallback after 500ms
+    setTimeout(() => { if (!window._a3mModulesReady) applyLang(savedLang); }, 500);
+  }
 
   // Close lang dropdown on outside click
   document.addEventListener("click", e => {
@@ -261,31 +342,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Backdrop close bindings
-  bindBackdropClose("prodModal",    () => window.closeProdModal?.());
-  bindBackdropClose("accountModal", () => window.closeAccount?.());
-  bindBackdropClose("orderModal",   closeOrderForm);
-  bindBackdropClose("modePicker",   closeModePicker);
+  // Modal backdrop clicks
+  document.getElementById("prodModal")    ?.addEventListener("click", e => { if (e.target === e.currentTarget && typeof closeProdModal  === 'function') closeProdModal(); });
+  document.getElementById("accountModal") ?.addEventListener("click", e => { if (e.target === e.currentTarget && typeof closeAccount    === 'function') closeAccount(); });
+  document.getElementById("orderModal")   ?.addEventListener("click", e => { if (e.target === e.currentTarget) closeOrderForm(); });
+  document.getElementById("modePicker")   ?.addEventListener("click", e => { if (e.target === e.currentTarget) closeModePicker(); });
 });
 
-// ── Window exports ────────────────────────────────────────────
-Object.assign(window, {
-  toggleTheme,
-  toggleLangMenu,
-  openSidebar,
-  closeSidebar,
-  toggleSB,
-  filterAndClose,
-  filterCat,
-  openModePicker,
-  closeModePicker,
-  openOrderForm,
-  closeOrderForm,
-  openOrderFromDesign,
-  submitOrder,
-  showPrint,
-  goToCheckout,
-  showToast,
-});
+// ── _applyFullLang — called by config.js/a3m-settings.js ──
+window._applyFullLang = function(lang) {
+  // Don't run if designer is open (avoid disrupting canvas state)
+  const dm = document.getElementById('designerModal');
+  if (dm && dm.classList.contains('open')) return;
+  applyLang(lang);
+};
 
-export {};
+export { applyLang, setLang, applyTheme, loadTheme, showPrint, goToCheckout };

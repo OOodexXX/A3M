@@ -275,10 +275,14 @@
 
   function openDesigner(mode) {
     if (typeof closeModePicker === "function") closeModePicker();
-    document.getElementById("designerModal")?.classList.add("open");
-    // Guard: if canvas.js failed to load _A3MCanvas won't exist
+    const dm = document.getElementById("designerModal");
+    if (!dm) { console.error("A3M: designerModal element not found"); return; }
+    dm.classList.add("open");
+
+    // ✅ FIX: إذا _A3MCanvas مش موجود بعد، انتظر قليلاً ثم حاول مجدداً
     if (!window._A3MCanvas) {
-      console.error("A3M: canvas.js not loaded — _A3MCanvas missing");
+      console.warn("A3M: _A3MCanvas not ready yet, retrying in 300ms...");
+      setTimeout(() => openDesigner(mode), 300);
       return;
     }
     window._A3MCanvas.resetDesignerState?.();
@@ -292,7 +296,12 @@
 
     requestAnimationFrame(() => {
       setTimeout(() => {
-        if (!initCanvasRefs()) { console.error("A3M: canvas not found"); return; }
+        if (!initCanvasRefs()) {
+          console.error("A3M: canvas not found in DOM");
+          if (typeof showToast === "function") showToast("⚠️ خطأ في تحميل الدزاينر، حاول مجدداً", "error");
+          dm.classList.remove("open");
+          return;
+        }
         clearCanvas(); drawAll(); buildTemplates(); buildTmplMini(); addSmartPalette();
         translateDesignerUI(); bindCanvasEvents(); updateUndoRedoUI();
         window._A3MCanvas.injectRulerCanvas(); setTimeout(() => window._A3MCanvas.drawRulers(), 60);
