@@ -1,0 +1,11 @@
+[
+  { "size": "A0", "dims": "841x1189mm", "use": "Large posters",        "price": 800,  "icon": "🖼️" },
+  { "size": "A1", "dims": "594x841mm",  "use": "Presentations",        "price": 550,  "icon": "🖼️" },
+  { "size": "A2", "dims": "420x594mm",  "use": "Technical drawings",   "price": 350,  "icon": "📋" },
+  { "size": "A3", "dims": "297x420mm",  "use": "Brochures",            "price": 200,  "icon": "📄" },
+  { "size": "A4", "dims": "210x297mm",  "use": "Documents & flyers",   "price": 80,   "icon": "📄" },
+  { "size": "A5", "dims": "148x210mm",  "use": "Cards & booklets",     "price": 60,   "icon": "📄" },
+  { "size": "B0", "dims": "1000x1414mm","use": "Extra large banners",  "price": 1000, "icon": "🖼️" },
+  { "size": "B1", "dims": "707x1000mm", "use": "Display prints",       "price": 700,  "icon": "🖼️" },
+  { "size": "B2", "dims": "500x707mm",  "use": "Medium display",       "price": 400,  "icon": "📋" }
+]

@@ -1,0 +1,250 @@
+// ============================================================
+// a3m-settings.js  –  A3M Print  –  Global Settings Manager
+// Handles: Language, Theme, Currency — persisted in localStorage
+// Include this script in ALL pages for cross-page sync
+// ============================================================
+
+(function () {
+  "use strict";
+
+  // ── Default Settings ──
+  const DEFAULTS = {
+    lang: "ar",
+    theme: "blue-dark",
+    currency: "DZD",
+  };
+
+  // ── Currency rates (DZD base) ──
+  const CURRENCY_RATES = {
+    DZD: 1,
+    USD: 0.0074,
+    EUR: 0.0068,
+    GBP: 0.0058,
+  };
+
+  const CURRENCY_SYMBOLS = {
+    DZD: "دج",
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+  };
+
+  // ── Load/Save ──
+  function loadSettings() {
+    try {
+      const saved = localStorage.getItem("a3m_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Back-compat: also read old individual keys
+        return {
+          lang:     parsed.lang     || localStorage.getItem("a3m_lang")  || DEFAULTS.lang,
+          theme:    parsed.theme    || localStorage.getItem("a3m_theme") || DEFAULTS.theme,
+          currency: parsed.currency || DEFAULTS.currency,
+        };
+      }
+    } catch (e) {}
+    return {
+      lang:     localStorage.getItem("a3m_lang")  || DEFAULTS.lang,
+      theme:    localStorage.getItem("a3m_theme") || DEFAULTS.theme,
+      currency: DEFAULTS.currency,
+    };
+  }
+
+  function saveSettings(settings) {
+    try {
+      localStorage.setItem("a3m_settings", JSON.stringify(settings));
+      // Keep back-compat keys
+      localStorage.setItem("a3m_lang",  settings.lang);
+      localStorage.setItem("a3m_theme", settings.theme);
+    } catch (e) {}
+  }
+
+  // ── Apply Language ──
+  function applyLang(lang) {
+    const validLangs = ["ar", "en", "fr"];
+    if (!validLangs.includes(lang)) lang = "ar";
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir  = lang === "ar" ? "rtl" : "ltr";
+
+    // Apply data-i18n attributes
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      const key = el.getAttribute("data-i18n");
+      const t = window.A3M_I18N && window.A3M_I18N[lang];
+      if (t && t[key]) el.textContent = t[key];
+    });
+
+    // Fire global event for page-specific handlers
+    document.dispatchEvent(new CustomEvent("a3m:lang", {
+      detail: {
+        lang: lang,
+        t: (window.A3M_I18N && window.A3M_I18N[lang]) || {},
+      }
+    }));
+
+    // Don't run if designer is open
+    var dm2 = document.getElementById('designerModal');
+    if (dm2 && dm2.classList.contains('open')) return;
+
+    // Call page-specific translation functions if they exist
+    if (typeof window.applyI18n === "function") window.applyI18n(lang);
+    if (typeof window.applyNavExtras === "function") window.applyNavExtras(lang);
+    if (typeof window.translateDesignerUI === "function") window.translateDesignerUI();
+    if (typeof window.updateHeroTagline === "function") window.updateHeroTagline(lang);
+    if (typeof window.translateSidebar === "function") window.translateSidebar(lang);
+
+    // Also call the main setLang if it exists (but avoid infinite recursion)
+    if (typeof window._origSetLang === "function") window._origSetLang(lang);
+
+    // ✅ FIX: بعد أي تغيير لغة، تأكد إن الفوتر والـ bot لا يزالان ظاهرين
+    setTimeout(function() {
+      var dm = document.getElementById('designerModal');
+      var ps = document.getElementById('psOverlay');
+      var designerOpen = dm && dm.classList.contains('open');
+      var psOpen = ps && ps.classList.contains('active');
+      if (!designerOpen && !psOpen) {
+        document.querySelectorAll('footer, footer.footer, .footer').forEach(function(el) {
+          el.style.removeProperty('display');
+        });
+        var bot = document.getElementById('a3m-bot-wrap');
+        if (bot) bot.style.removeProperty('display');
+      }
+    }, 100);
+  }
+
+  // ── Apply Theme ──
+  // All known theme classes
+  var THEME_CLASSES = [
+    "blue-dark","blue-light","beige-dark","beige-light",
+    "purple-dark","purple-light","white-light","white-dark",
+    "dark","light"
+  ];
+
+  function applyTheme(theme) {
+    // ✅ FIX: احفظ الـ classes المهمة قبل المسح
+    var keepClasses = ['designer-open', 'ps-open'];
+    var kept = keepClasses.filter(function(c) { return document.body.classList.contains(c); });
+
+    // Remove ALL theme classes without touching other classes
+    THEME_CLASSES.forEach(function(t) { document.body.classList.remove(t); });
+    document.body.classList.add(theme);
+
+    // ✅ أعِد الـ classes المهمة
+    kept.forEach(function(c) { document.body.classList.add(c); });
+
+    // Update any theme icon in nav
+    const icon = document.getElementById("themeIcon");
+    if (icon) icon.textContent = theme.includes("dark") ? "🌙" : "☀️";
+    const dark  = document.getElementById("modeDarkBtn");
+    const light = document.getElementById("modeLightBtn");
+    if (dark)  dark.classList.toggle("active",  theme.includes("dark"));
+    if (light) light.classList.toggle("active", theme.includes("light"));
+  }
+
+  // ── Apply Currency ──
+  function applyCurrency(currency) {
+    const symbol = CURRENCY_SYMBOLS[currency] || currency;
+    // Update all elements with data-price attribute
+    document.querySelectorAll("[data-price-dzd]").forEach(function (el) {
+      const dzd = parseFloat(el.getAttribute("data-price-dzd")) || 0;
+      const converted = (dzd * (CURRENCY_RATES[currency] || 1)).toFixed(
+        currency === "DZD" ? 0 : 2
+      );
+      el.textContent = converted + " " + symbol;
+    });
+    // Fire event for manual handlers
+    document.dispatchEvent(new CustomEvent("a3m:currency", {
+      detail: { currency, symbol, rate: CURRENCY_RATES[currency] || 1 }
+    }));
+  }
+
+  // ── Public API ──
+  var A3MSettings = {
+    get: loadSettings,
+
+    setLang: function (lang) {
+      var s = loadSettings();
+      s.lang = lang;
+      saveSettings(s);
+      applyLang(lang);
+    },
+
+    setTheme: function (theme) {
+      var s = loadSettings();
+      s.theme = theme;
+      saveSettings(s);
+      applyTheme(theme);
+    },
+
+    setCurrency: function (currency) {
+      var s = loadSettings();
+      s.currency = currency;
+      saveSettings(s);
+      applyCurrency(currency);
+    },
+
+    applyAll: function () {
+      var s = loadSettings();
+      applyTheme(s.theme);
+      applyCurrency(s.currency);
+      // Don't apply lang if designer is open
+      var dm = document.getElementById('designerModal');
+      if (dm && dm.classList.contains('open')) return;
+      // Lang applied after DOM ready for translations
+      applyLang(s.lang);
+    },
+
+    CURRENCY_RATES: CURRENCY_RATES,
+    CURRENCY_SYMBOLS: CURRENCY_SYMBOLS,
+  };
+
+  window.A3MSettings = A3MSettings;
+
+  // ── Auto-apply on page load ──
+  // Apply theme immediately (before paint)
+  var _s = loadSettings();
+  applyTheme(_s.theme);
+
+  // Apply rest after DOM is ready
+  function _safeApplyAll() {
+    // Wait for a3m-ready if modules haven't loaded yet
+    if (window._a3mModulesReady) {
+      A3MSettings.applyAll();
+    } else {
+      // Apply theme immediately, defer lang to after modules load
+      var s = loadSettings();
+      applyTheme(s.theme);
+      applyCurrency(s.currency);
+      window.addEventListener('a3m-ready', function() {
+        setTimeout(function() { A3MSettings.applyAll(); }, 80);
+      }, { once: true });
+      // Fallback
+      setTimeout(function() {
+        if (!window._a3mModulesReady) A3MSettings.applyAll();
+      }, 800);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(_safeApplyAll, 150);
+    });
+  } else {
+    setTimeout(_safeApplyAll, 150);
+  }
+
+  // ── Patch window.setLang so existing pages auto-persist ──
+  document.addEventListener("DOMContentLoaded", function () {
+    var _old = window.setLang;
+    window._origSetLang = _old;
+    window.setLang = function (lang) {
+      A3MSettings.setLang(lang);
+    };
+    var _oldTheme = window.setTheme;
+    window.setTheme = function (theme) {
+      A3MSettings.setTheme(theme);
+      if (_oldTheme) _oldTheme(theme);
+    };
+  });
+
+})();
